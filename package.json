@@ -1,8 +1,12 @@
 {
   "name": "frostline-studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "license": "MIT",
+  "author": {
+    "name": "gunbread0418",
+    "url": "https://github.com/gunbread0418"
+  },
   "description": "A safety-first desktop theme designer with a Codex-inspired preview.",
   "repository": {
     "type": "git",
@@ -28,7 +32,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:smoke": "node scripts/electron-smoke.mjs",
-    "screenshot": "npm run build && node scripts/capture-screenshot.mjs"
+    "screenshot": "npm run build && node scripts/capture-screenshot.mjs",
+    "clean:release": "node scripts/clean-release.mjs",
+    "package:dir": "npm run clean:release && npm run build && electron-builder --dir --win --x64",
+    "package:win": "npm run clean:release && npm run build && electron-builder --win nsis --x64 && npm run verify:package && npm run checksum:package && npm run test:installer",
+    "verify:package": "node scripts/verify-package.mjs",
+    "checksum:package": "node scripts/checksum-release.mjs",
+    "test:installer": "node scripts/installer-smoke.mjs"
   },
   "engines": {
     "node": "^24.15.0"
@@ -38,6 +48,7 @@
     "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@electron/asar": "3.4.1",
     "@eslint/js": "10.0.1",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "7.0.1",
@@ -49,6 +60,7 @@
     "@vitejs/plugin-react": "6.0.5",
     "concurrently": "10.0.4",
     "electron": "43.4.0",
+    "electron-builder": "26.15.3",
     "eslint": "10.8.1",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.11.0",
@@ -58,5 +70,61 @@
     "vite": "8.2.1",
     "vitest": "4.1.10",
     "wait-on": "9.1.0"
+  },
+  "build": {
+    "appId": "io.github.gunbread0418.frostline-studio",
+    "productName": "Frostline Studio",
+    "copyright": "Copyright © 2026 gunbread0418",
+    "asar": true,
+    "compression": "normal",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      {
+        "from": "dist",
+        "to": "dist",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "dist-electron",
+        "to": "dist-electron",
+        "filter": [
+          "**/*"
+        ]
+      },
+      "package.json",
+      "LICENSE"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.svg",
+      "artifactName": "Frostline-Studio-${version}-Setup-${arch}.${ext}",
+      "requestedExecutionLevel": "asInvoker",
+      "signExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Frostline Studio",
+      "uninstallDisplayName": "Frostline Studio",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false
+    },
+    "publish": null
   }
 }

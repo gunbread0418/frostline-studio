@@ -1,0 +1,23 @@
+node_modules/
+dist/
+dist-electron/
+release/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+
+# Personal photos must never be committed. The app copies selections to Electron userData.
+user-data/
+local-assets/
+private-assets/
+*.frostline-private.*
+docs/screenshots/private-*
+

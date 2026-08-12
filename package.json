@@ -1,0 +1,50 @@
+{
+  "name": "frostline-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A safety-first desktop theme designer with a Codex-inspired preview.",
+  "main": "dist-electron/electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k -n electron,renderer,app -c blue,cyan,green \"npm:dev:electron\" \"npm:dev:renderer\" \"npm:dev:app\"",
+    "dev:electron": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
+    "dev:renderer": "vite --host 127.0.0.1",
+    "dev:app": "wait-on dist-electron/electron/main.js tcp:127.0.0.1:5173 && electron . --dev",
+    "start": "electron .",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.electron.json --noEmit",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:renderer": "vite build",
+    "build": "npm run typecheck && npm run build:electron && npm run build:renderer",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.2",
+    "@testing-library/user-event": "14.6.4",
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "@vitejs/plugin-react": "6.0.5",
+    "concurrently": "10.0.4",
+    "electron": "43.4.0",
+    "eslint": "10.0.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.11.0",
+    "jsdom": "30.0.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vite": "8.2.1",
+    "vitest": "4.1.10",
+    "wait-on": "9.1.0"
+  }
+}

@@ -4,6 +4,22 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-12
+
+### Added
+
+- 현재 사용자 범위에 설치되는 Windows x64 NSIS 설치 파일
+- 원본 Frostline Studio 앱 아이콘과 Windows 실행 파일 메타데이터
+- 패키지 ASAR 허용 목록, 민감정보 패턴과 개인정보 경로 검사
+- SHA-256 체크섬 생성
+- 임시 폴더 설치, 설치된 앱 재실행 복구, 제거 자동 테스트
+- 수동 실행과 버전 태그에서 unsigned 설치 파일을 만드는 GitHub Actions 워크플로
+
+### Changed
+
+- M5 설치·배포 상태와 코드 서명 제한을 README와 설계 문서에 반영
+- 제거 시 사용자 테마와 사진 데이터를 보존하도록 명시
+
 ## [0.1.0] - 2026-08-12
 
 ### Added
@@ -22,5 +38,6 @@
 - 공식 Appearance용 수동 색상 가이드와 접근성 대비 검사
 - 재현 가능한 포트폴리오 스크린샷 생성 명령
 
-[Unreleased]: https://github.com/gunbread0418/frostline-studio/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/gunbread0418/frostline-studio/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/gunbread0418/frostline-studio/releases/tag/v0.2.0
 [0.1.0]: https://github.com/gunbread0418/frostline-studio/releases/tag/v0.1.0

@@ -1,6 +1,7 @@
 # Frostline Studio
 
 [![CI](https://github.com/gunbread0418/frostline-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/gunbread0418/frostline-studio/actions/workflows/ci.yml)
+[![Package Windows](https://github.com/gunbread0418/frostline-studio/actions/workflows/package-windows.yml/badge.svg)](https://github.com/gunbread0418/frostline-studio/actions/workflows/package-windows.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-9ee7d5.svg)](LICENSE)
 
 Frostline Studio는 사용자가 고른 사진과 색상으로 Codex에서 영감을 받은 데스크톱 테마를 디자인하는 Windows용 Electron 앱입니다. 현재 구현 범위는 안전한 독립 미리보기이며, 설치된 Codex 앱에는 접근하지 않습니다.
@@ -12,9 +13,16 @@ Frostline Studio는 사용자가 고른 사진과 색상으로 Codex에서 영�
 - M0: 저장소, 아키텍처, 안전 경계, 자동 적용 상태 머신
 - M1: 로컬 사진 선택, 테마 편집, 실시간 미리보기, 여러 테마 관리, 안전한 로컬 저장, 가져오기와 내보내기
 - M2: 공식 문서와 로컬 설치 상태를 읽기 전용으로 조사하고 연동 경계를 결정
+- M5: Windows x64 설치 파일, 설치·재실행·제거 검사, SHA-256 체크섬, 공개 빌드 워크플로
 - M3 이후: 공식적으로 지원되는 외부 적용 수단이 확인되고 사용자가 별도로 승인한 경우에만 진행
 
-## 실행 방법
+## Windows 설치
+
+[GitHub Releases](https://github.com/gunbread0418/frostline-studio/releases)에서 최신 `Frostline-Studio-<version>-Setup-x64.exe`를 내려받아 실행합니다. 현재 설치 파일은 코드 서명 인증서로 서명되지 않았으므로 Windows SmartScreen이 게시자를 확인할 수 없다는 경고를 표시할 수 있습니다. 릴리스의 `SHA256SUMS.txt`로 다운로드한 파일의 SHA-256 값을 확인할 수 있습니다.
+
+설치 프로그램은 현재 Windows 사용자에게만 설치되며 관리자 권한을 요구하지 않습니다. 제거할 때는 예상치 못한 사진·테마 손실을 막기 위해 앱 전용 데이터가 자동으로 삭제되지 않습니다.
+
+## 개발 실행
 
 요구 환경은 Windows 10 이상과 Node.js 24 LTS 24.15 이상입니다.
 
@@ -32,6 +40,7 @@ npm.cmd run lint
 npm.cmd test
 npm.cmd run build
 npm.cmd run test:smoke
+npm.cmd run package:win
 ```
 
 빌드 뒤 실행하려면 다음 명령을 사용합니다.
@@ -40,7 +49,7 @@ npm.cmd run test:smoke
 npm.cmd start
 ```
 
-`test:smoke`는 실제 Electron을 임시 사용자 데이터 폴더에서 두 번 실행해 main–preload–Renderer 연결과 재실행 뒤 설정 복구를 확인합니다.
+`test:smoke`는 실제 Electron을 임시 사용자 데이터 폴더에서 두 번 실행해 main–preload–Renderer 연결과 재실행 뒤 설정 복구를 확인합니다. `package:win`은 x64 NSIS 설치 파일을 만든 뒤 내부 허용 목록, 개인정보 패턴, SHA-256 체크섬, 임시 설치·재실행·제거까지 검사합니다.
 
 ## 주요 기능
 
@@ -73,11 +82,11 @@ Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. 현재는 `Prev
 
 ## 검증 상태
 
-2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 16개, production build, Electron 재시작 smoke test를 통과했습니다. 사용자가 아래 직접 확인 항목 1~6도 모두 정상 작동한다고 확인했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
+2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 16개, production build, Electron 재시작 smoke test를 통과했습니다. M5에서는 unsigned x64 NSIS 설치 파일 생성과 패키지 내부 검사, SHA-256 생성, 임시 설치·재실행·제거 테스트를 통과했습니다. 사용자가 아래 직접 확인 항목 1~6도 모두 정상 작동한다고 확인했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
 
 ## 알려진 제한
 
-현재 버전은 미리보기 전용입니다. 공식 Codex 앱의 내장 `Settings → Appearance`에서는 색상과 글꼴을 직접 바꿀 수 있지만, 사진 배경이나 외부 자동 적용은 공식 지원을 확인하지 못했습니다. 실제 Codex 테마 적용, 복원, Windows 자동 시작, 프로세스 시작 이벤트 감지, 설치 파일 생성은 구현하지 않았습니다. 자세한 내용은 [제한 문서](docs/limitations.md)와 [ADR-0001](docs/adr/0001-codex-integration-boundary.md)을 참고하세요.
+현재 버전은 미리보기 전용입니다. 공식 Codex 앱의 내장 `Settings → Appearance`에서는 색상과 글꼴을 직접 바꿀 수 있지만, 사진 배경이나 외부 자동 적용은 공식 지원을 확인하지 못했습니다. 실제 Codex 테마 적용, 복원, Windows 자동 시작과 프로세스 시작 이벤트 감지는 구현하지 않았습니다. Windows 설치 파일은 제공하지만 아직 코드 서명이 없어 SmartScreen 평판 경고가 나타날 수 있습니다. 자세한 내용은 [제한 문서](docs/limitations.md)와 [ADR-0001](docs/adr/0001-codex-integration-boundary.md)을 참고하세요.
 
 ## 스크린샷
 
@@ -99,8 +108,12 @@ npm.cmd run screenshot
 4. 테마 생성, 이름 변경, 복제, 삭제, 가져오기, 내보내기를 확인합니다.
 5. 앱을 닫고 다시 실행했을 때 선택한 테마, 사진, 편집값이 복구되는지 확인합니다.
 6. `Codex에 적용`, `복원`, `자동 적용 켜기`, `비상 정지`가 M1에서 비활성 상태인지 확인합니다.
+7. GitHub Release의 설치 파일로 현재 사용자 범위에 설치되는지 확인합니다.
+8. 설치된 바로가기에서 앱이 실행되고 기존 테마 편집 기능이 같은 방식으로 동작하는지 확인합니다.
+9. 제거 프로그램이 앱 본체와 바로가기를 제거하는지 확인합니다.
+10. 제거 뒤 다시 설치했을 때 기존 테마가 보존되는지 확인합니다. 개인 데이터를 지우려는 경우에는 앱 전용 데이터 폴더를 사용자가 별도로 삭제해야 합니다.
 
-사용자 확인 결과: 2026-08-12에 1~6번 모두 정상 작동했습니다.
+사용자 확인 결과: 2026-08-12에 1~6번 모두 정상 작동했습니다. 7~10번은 자동 설치 테스트를 통과했으며 실제 Windows 바탕 화면과 제거 UI를 사용하는 수동 확인이 남아 있습니다.
 
 ## 오픈소스 참여
 

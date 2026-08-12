@@ -47,6 +47,23 @@ Electron userData/Frostline Studio/
 
 원본 경로는 저장하지 않습니다. 앱 전용 사진은 무작위 파일명으로 복사하며 Renderer에는 관리 URL만 전달합니다. `themes.json`은 버전이 있는 JSON 문서입니다.
 
+## Windows 배포 구조
+
+```text
+TypeScript + React source
+  └─ npm run build
+       ├─ dist/                 Renderer production bundle
+       └─ dist-electron/        Electron main/preload bundle
+             └─ electron-builder
+                  ├─ release/win-unpacked/
+                  ├─ Frostline-Studio-<version>-Setup-x64.exe
+                  └─ SHA256SUMS.txt
+```
+
+`electron-builder`는 허용 목록에 있는 파일만 `app.asar`로 묶습니다. 패키지 검사는 archive 내부 경로와 앱 소유 텍스트 파일의 민감정보 패턴을 확인합니다. 설치 스모크 테스트는 운영 사용자 데이터와 분리된 임시 경로에 설치해 저장·재실행·제거를 검증합니다.
+
+GitHub의 Package Windows 워크플로는 수동 실행과 버전 태그에서 unsigned 설치 파일을 만듭니다. 코드 서명 인증서나 인증서 비밀번호는 저장소에 두지 않습니다.
+
 ## 자동 적용 상태 머신
 
 자동 적용 상태 머신은 `src/shared/auto-apply-machine.ts`에 순수 함수로 정의되어 있습니다.

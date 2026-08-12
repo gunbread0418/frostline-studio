@@ -24,12 +24,14 @@ npm.cmd run lint
 npm.cmd test
 npm.cmd run build
 npm.cmd run test:smoke
+npm.cmd run screenshot
 ```
 
 - `lint`: Electron, React, 공유 타입, 테스트, 스크립트의 정적 규칙을 검사합니다.
 - `test`: 5개 테스트 파일의 16개 테스트를 실행합니다.
 - `build`: 기존 산출물을 정리하고 TypeScript 검사, Electron 컴파일, Renderer production build를 실행합니다.
 - `test:smoke`: 별도 임시 `userData`로 Electron을 두 번 실행합니다. 첫 실행에서 테마 이름과 밝기를 저장하고 두 번째 실행에서 같은 값이 복구되는지 확인합니다.
+- `screenshot`: production build 뒤 빈 임시 `userData`로 앱을 숨김 실행하고 공개용 PNG를 생성합니다. 개인 사진과 기존 로컬 설정을 읽지 않습니다.
 
 ## 테스트가 확인하는 안전 조건
 

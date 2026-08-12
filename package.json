@@ -27,7 +27,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:smoke": "node scripts/electron-smoke.mjs"
+    "test:smoke": "node scripts/electron-smoke.mjs",
+    "screenshot": "npm run build && node scripts/capture-screenshot.mjs"
   },
   "engines": {
     "node": "^24.15.0"

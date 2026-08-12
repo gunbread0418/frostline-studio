@@ -81,9 +81,15 @@ Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. 현재는 `Prev
 
 ## 스크린샷
 
-M1 화면을 직접 확인한 뒤 공개 가능한 이미지를 `docs/screenshots/`에 추가할 예정입니다. 개인 사진이 들어간 파일은 사용하지 않습니다.
+아래 이미지는 빈 임시 사용자 데이터와 프로젝트가 직접 만든 기본 테마로 생성했습니다. 개인 사진과 로컬 설정은 포함하지 않습니다.
 
-<!-- Screenshot placeholder: docs/screenshots/frostline-studio-m1.png -->
+![Frostline Studio preview](docs/screenshots/frostline-studio-preview.png)
+
+같은 조건으로 다시 만들려면 다음 명령을 사용합니다.
+
+```powershell
+npm.cmd run screenshot
+```
 
 ## 앱에서 직접 확인할 항목
 

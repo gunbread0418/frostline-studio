@@ -1,4 +1,5 @@
 import { app, BrowserWindow, clipboard, dialog, ipcMain, net, protocol } from 'electron';
+import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { IPC_CHANNELS } from '../src/shared/ipc';
@@ -14,8 +15,11 @@ protocol.registerSchemesAsPrivileged([
 
 const isDevelopment = process.argv.includes('--dev');
 const isSmokeTest = process.argv.includes('--smoke-test');
+const isScreenshotCapture = process.argv.includes('--capture-screenshot');
 const smokeUserDataPath = readArgumentValue('--smoke-user-data=');
 const smokePhase = readArgumentValue('--smoke-phase=');
+const screenshotUserDataPath = readArgumentValue('--capture-user-data=');
+const screenshotOutputPath = readArgumentValue('--capture-output=');
 const productionPagePath = path.resolve(__dirname, '../../dist/index.html');
 let mainWindow: BrowserWindow | null = null;
 let store: ThemeStore;
@@ -23,7 +27,10 @@ let store: ThemeStore;
 if (smokeUserDataPath) {
   app.setPath('userData', path.resolve(smokeUserDataPath));
 }
-if (isSmokeTest) {
+if (screenshotUserDataPath) {
+  app.setPath('userData', path.resolve(screenshotUserDataPath));
+}
+if (isSmokeTest || isScreenshotCapture) {
   app.disableHardwareAcceleration();
 }
 
@@ -77,10 +84,11 @@ function createWindow(): void {
     if (!isTrustedPageUrl(url)) event.preventDefault();
   });
   mainWindow.once('ready-to-show', () => {
-    if (!isSmokeTest) mainWindow?.show();
+    if (!isSmokeTest && !isScreenshotCapture) mainWindow?.show();
   });
   mainWindow.webContents.once('did-finish-load', () => {
     if (isSmokeTest) void runSmokePhase();
+    if (isScreenshotCapture) void captureScreenshot();
   });
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -228,6 +236,42 @@ async function runSmokePhase(): Promise<void> {
     app.exit(0);
   } catch (error) {
     console.error(`FROSTLINE_SMOKE_ERROR: ${error instanceof Error ? error.message : String(error)}`);
+    app.exit(1);
+  }
+}
+
+async function captureScreenshot(): Promise<void> {
+  if (!mainWindow || !screenshotOutputPath || path.extname(screenshotOutputPath) !== '.png') {
+    console.error('FROSTLINE_SCREENSHOT_ERROR: invalid output path');
+    app.exit(1);
+    return;
+  }
+
+  try {
+    await mainWindow.webContents.executeJavaScript(`
+      (async () => {
+        const deadline = Date.now() + 3000;
+        while (!document.querySelector('[aria-label="테마 실시간 미리보기"]')) {
+          if (Date.now() > deadline) throw new Error('preview did not render');
+          await new Promise((resolve) => setTimeout(resolve, 25));
+        }
+        const colorTab = [...document.querySelectorAll('[role="tab"]')]
+          .find((element) => element.textContent?.trim() === '색상');
+        colorTab?.click();
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      })()
+    `);
+    const image = await mainWindow.webContents.capturePage();
+    if (image.isEmpty()) throw new Error('captured image is empty');
+    const outputPath = path.resolve(screenshotOutputPath);
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
+    await fs.writeFile(outputPath, image.toPNG());
+    console.log('FROSTLINE_SCREENSHOT_OK');
+    app.exit(0);
+  } catch (error) {
+    console.error(
+      `FROSTLINE_SCREENSHOT_ERROR: ${error instanceof Error ? error.message : String(error)}`,
+    );
     app.exit(1);
   }
 }

@@ -34,7 +34,7 @@ npm.cmd run package:win
 - `build`: 기존 산출물을 정리하고 TypeScript 검사, Electron 컴파일, Renderer production build를 실행합니다.
 - `test:smoke`: 별도 임시 `userData`로 Electron을 두 번 실행합니다. 첫 실행에서 테마 이름과 밝기를 저장하고 두 번째 실행에서 같은 값이 복구되는지 확인합니다.
 - `screenshot`: production build 뒤 빈 임시 `userData`로 앱을 숨김 실행하고 공개용 PNG를 생성합니다. 개인 사진과 기존 로컬 설정을 읽지 않습니다.
-- `package:win`: `release/`를 안전하게 정리하고 unsigned x64 NSIS 설치 파일을 생성합니다. 이어서 ASAR 허용 목록과 민감정보 패턴을 검사하고 SHA-256 목록을 만든 뒤 임시 폴더에 설치·실행·재실행·제거합니다.
+- `package:win`: `release/`를 안전하게 정리하고 unsigned x64 NSIS 설치 파일을 생성합니다. 이어서 ASAR 허용 목록과 민감정보 패턴을 검사하고 임시 폴더에 설치·실행·재실행·제거한 뒤 최종 파일의 SHA-256 목록을 만듭니다.
 
 ## 테스트가 확인하는 안전 조건
 

@@ -35,7 +35,7 @@
     "screenshot": "npm run build && node scripts/capture-screenshot.mjs",
     "clean:release": "node scripts/clean-release.mjs",
     "package:dir": "npm run clean:release && npm run build && electron-builder --dir --win --x64",
-    "package:win": "npm run clean:release && npm run build && electron-builder --win nsis --x64 && npm run verify:package && npm run checksum:package && npm run test:installer",
+    "package:win": "npm run clean:release && npm run build && electron-builder --win nsis --x64 && npm run verify:package && npm run test:installer && npm run checksum:package",
     "verify:package": "node scripts/verify-package.mjs",
     "checksum:package": "node scripts/checksum-release.mjs",
     "test:installer": "node scripts/installer-smoke.mjs"

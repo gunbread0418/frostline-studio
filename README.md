@@ -49,7 +49,7 @@ npm.cmd run package:win
 npm.cmd start
 ```
 
-`test:smoke`는 실제 Electron을 임시 사용자 데이터 폴더에서 두 번 실행해 main–preload–Renderer 연결과 재실행 뒤 설정 복구를 확인합니다. `package:win`은 x64 NSIS 설치 파일을 만든 뒤 내부 허용 목록, 개인정보 패턴, SHA-256 체크섬, 임시 설치·재실행·제거까지 검사합니다.
+`test:smoke`는 실제 Electron을 임시 사용자 데이터 폴더에서 두 번 실행해 main–preload–Renderer 연결과 재실행 뒤 설정 복구를 확인합니다. `package:win`은 x64 NSIS 설치 파일을 만든 뒤 내부 허용 목록과 개인정보 패턴, 임시 설치·재실행·제거를 검사하고 마지막에 SHA-256 체크섬을 생성합니다.
 
 ## 주요 기능
 

@@ -10,16 +10,18 @@
     "dev:renderer": "vite --host 127.0.0.1",
     "dev:app": "wait-on dist-electron/electron/main.js tcp:127.0.0.1:5173 && electron . --dev",
     "start": "electron .",
+    "clean": "node scripts/clean.mjs",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.electron.json --noEmit",
     "build:electron": "tsc -p tsconfig.electron.json",
     "build:renderer": "vite build",
-    "build": "npm run typecheck && npm run build:electron && npm run build:renderer",
+    "build": "npm run clean && npm run typecheck && npm run build:electron && npm run build:renderer",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:smoke": "node scripts/electron-smoke.mjs"
   },
   "engines": {
-    "node": ">=24.15.0"
+    "node": "^24.15.0"
   },
   "dependencies": {
     "react": "19.2.8",

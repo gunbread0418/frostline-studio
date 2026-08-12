@@ -18,10 +18,14 @@ export default tseslint.config(
     rules: reactHooks.configs.flat.recommended.rules,
   },
   {
-    files: ['electron/**/*.ts', '*.config.{ts,mjs}', 'vitest.setup.ts'],
+    files: [
+      'electron/**/*.ts',
+      'scripts/**/*.mjs',
+      '*.config.{ts,mts,mjs}',
+      'vitest.setup.ts',
+    ],
     languageOptions: {
       globals: globals.node,
     },
   },
 );
-

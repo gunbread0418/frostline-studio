@@ -4,14 +4,6 @@
 
 ## [Unreleased]
 
-### Added
-
-- MIT 라이선스와 오픈소스 기여·보안·거버넌스 문서
-- GitHub issue/PR 템플릿과 Windows CI
-- 공개 테마 Schema, 사진 없는 예시 테마, 커뮤니티 테마 작성 지침
-- 공식 Appearance용 수동 색상 가이드와 접근성 대비 검사
-- 재현 가능한 포트폴리오 스크린샷 생성 명령
-
 ## [0.1.0] - 2026-08-12
 
 ### Added
@@ -24,6 +16,11 @@
 - 안전한 preload IPC와 격리된 Adapter 계약
 - 자동 적용 안전 상태 머신과 단위 테스트
 - 공식 Codex 연동 가능성에 대한 M2 읽기 전용 조사와 ADR
+- MIT 라이선스와 오픈소스 기여·보안·거버넌스 문서
+- GitHub issue/PR 템플릿과 Windows CI
+- 공개 테마 Schema, 사진 없는 예시 테마, 커뮤니티 테마 작성 지침
+- 공식 Appearance용 수동 색상 가이드와 접근성 대비 검사
+- 재현 가능한 포트폴리오 스크린샷 생성 명령
 
 [Unreleased]: https://github.com/gunbread0418/frostline-studio/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/gunbread0418/frostline-studio/releases/tag/v0.1.0

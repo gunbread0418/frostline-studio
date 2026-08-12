@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/gunbread0418/frostline-studio/main/schemas/frostline-theme.schema.json",
+  "title": "Frostline Studio theme export",
+  "description": "Portable Frostline Studio theme document. Images are optional and embedded only in explicit exports.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "version", "exportedAt", "theme"],
+  "properties": {
+    "format": { "const": "frostline-theme" },
+    "version": { "const": 1 },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "theme": { "$ref": "#/$defs/theme" }
+  },
+  "$defs": {
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$"
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["originalName", "mimeType", "dataBase64"],
+      "properties": {
+        "originalName": { "type": "string", "minLength": 1, "maxLength": 255 },
+        "mimeType": { "enum": ["image/png", "image/jpeg", "image/webp", "image/bmp"] },
+        "dataBase64": { "type": "string", "minLength": 1 }
+      }
+    },
+    "values": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "backgroundFit", "backgroundX", "backgroundY", "backgroundScale",
+        "brightness", "saturation", "contrast", "blur", "overlayColor",
+        "overlayOpacity", "sidebarColor", "bodyColor", "inputColor",
+        "borderColor", "accentColor"
+      ],
+      "properties": {
+        "backgroundFit": { "enum": ["cover", "contain"] },
+        "backgroundX": { "type": "number", "minimum": 0, "maximum": 100 },
+        "backgroundY": { "type": "number", "minimum": 0, "maximum": 100 },
+        "backgroundScale": { "type": "number", "minimum": 50, "maximum": 200 },
+        "brightness": { "type": "number", "minimum": 20, "maximum": 160 },
+        "saturation": { "type": "number", "minimum": 0, "maximum": 200 },
+        "contrast": { "type": "number", "minimum": 50, "maximum": 180 },
+        "blur": { "type": "number", "minimum": 0, "maximum": 24 },
+        "overlayColor": { "$ref": "#/$defs/hexColor" },
+        "overlayOpacity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "sidebarColor": { "$ref": "#/$defs/hexColor" },
+        "bodyColor": { "$ref": "#/$defs/hexColor" },
+        "inputColor": { "$ref": "#/$defs/hexColor" },
+        "borderColor": { "$ref": "#/$defs/hexColor" },
+        "accentColor": { "$ref": "#/$defs/hexColor" }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "image", "values", "createdAt", "updatedAt"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "image": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/image" }
+          ]
+        },
+        "values": { "$ref": "#/$defs/values" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

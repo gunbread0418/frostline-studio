@@ -1,5 +1,8 @@
 # Frostline Studio
 
+[![CI](https://github.com/gunbread0418/frostline-studio/actions/workflows/ci.yml/badge.svg)](https://github.com/gunbread0418/frostline-studio/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-9ee7d5.svg)](LICENSE)
+
 Frostline Studio는 사용자가 고른 사진과 색상으로 Codex에서 영감을 받은 데스크톱 테마를 디자인하는 Windows용 Electron 앱입니다. 현재 구현 범위는 안전한 독립 미리보기이며, 설치된 Codex 앱에는 접근하지 않습니다.
 
 > **Unofficial project. Not affiliated with or endorsed by OpenAI.**
@@ -48,6 +51,7 @@ npm.cmd start
 - 사진을 포함한 테마 파일 가져오기와 내보내기
 - 앱을 다시 실행해도 선택한 테마와 편집 상태 복구
 - 실행 로그와 최근 로컬 작업 결과 표시
+- 공개 JSON Schema와 사진 없는 예시 테마
 
 ## 아키텍처
 
@@ -90,6 +94,12 @@ M1 화면을 직접 확인한 뒤 공개 가능한 이미지를 `docs/screenshot
 
 사용자 확인 결과: 2026-08-12에 1~6번 모두 정상 작동했습니다.
 
+## 오픈소스 참여
+
+버그 보고와 기능 제안은 GitHub issue 양식을 사용합니다. 코드 변경 전에는 [기여 지침](CONTRIBUTING.md), 보안 문제는 [보안 정책](SECURITY.md), 참여 규칙은 [행동 규범](CODE_OF_CONDUCT.md)을 확인하세요. 테마 파일 형식은 [공개 Schema](schemas/frostline-theme.schema.json)와 [작성 지침](docs/theme-format.md)에 정리되어 있습니다.
+
+현재 계획과 완료 조건은 [ROADMAP.md](ROADMAP.md), 버전별 변경은 [CHANGELOG.md](CHANGELOG.md)에서 확인할 수 있습니다.
+
 ## 라이선스
 
-라이선스는 아직 정하지 않았습니다. 공개 저장소를 만들기 전에 MIT 적용 여부를 사용자에게 확인합니다.
+소스 코드는 [MIT License](LICENSE)로 배포합니다. 외부 라이브러리와 사용자가 선택한 사진은 각각의 권리와 라이선스를 따릅니다. MIT 라이선스는 OpenAI 또는 Codex 상표 사용 권리를 부여하지 않습니다.

@@ -2,7 +2,16 @@
   "name": "frostline-studio",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "A safety-first desktop theme designer with a Codex-inspired preview.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gunbread0418/frostline-studio.git"
+  },
+  "homepage": "https://github.com/gunbread0418/frostline-studio#readme",
+  "bugs": {
+    "url": "https://github.com/gunbread0418/frostline-studio/issues"
+  },
   "main": "dist-electron/electron/main.js",
   "scripts": {
     "dev": "concurrently -k -n electron,renderer,app -c blue,cyan,green \"npm:dev:electron\" \"npm:dev:renderer\" \"npm:dev:app\"",

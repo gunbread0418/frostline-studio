@@ -1,0 +1,29 @@
+{
+  "format": "frostline-theme",
+  "version": 1,
+  "exportedAt": "2026-08-12T00:00:00.000Z",
+  "theme": {
+    "id": "frostline-midnight-example",
+    "name": "Frostline Midnight",
+    "image": null,
+    "values": {
+      "backgroundFit": "cover",
+      "backgroundX": 50,
+      "backgroundY": 50,
+      "backgroundScale": 100,
+      "brightness": 72,
+      "saturation": 78,
+      "contrast": 108,
+      "blur": 0,
+      "overlayColor": "#080b12",
+      "overlayOpacity": 54,
+      "sidebarColor": "#111722",
+      "bodyColor": "#0d1119",
+      "inputColor": "#171e2a",
+      "borderColor": "#2b3545",
+      "accentColor": "#9ee7d5"
+    },
+    "createdAt": "2026-08-12T00:00:00.000Z",
+    "updatedAt": "2026-08-12T00:00:00.000Z"
+  }
+}

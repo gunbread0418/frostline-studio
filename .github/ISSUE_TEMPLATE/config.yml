@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 사용 방법과 지원 범위
+    url: https://github.com/gunbread0418/frostline-studio/blob/main/SUPPORT.md
+    about: 먼저 지원 문서와 알려진 제한을 확인해 주세요.
+  - name: 비공개 보안 신고
+    url: https://github.com/gunbread0418/frostline-studio/security/advisories/new
+    about: 취약점과 민감한 재현 정보는 공개 issue 대신 이 경로를 사용하세요.

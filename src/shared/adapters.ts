@@ -30,15 +30,14 @@ export const OFFICIAL_CODEX_CAPABILITIES: AdapterCapabilities = {
 };
 
 /**
- * M0/M1 safety boundary. There is intentionally no implementation that discovers,
- * starts, stops, injects into, or edits the installed Codex application.
+ * M2 safety decision. Official documentation does not expose a supported external
+ * theme-application API, so this contract intentionally has no implementation.
  */
 export interface OfficialCodexAdapter extends ThemeAdapter {
   readonly kind: 'official-codex';
 }
 
-/** Future independent client boundary; no App Server assumptions are made in M0/M1. */
+/** Future independent client boundary; this does not modify the official desktop app. */
 export interface AppServerClientAdapter extends ThemeAdapter {
   readonly kind: 'app-server-client';
 }
-

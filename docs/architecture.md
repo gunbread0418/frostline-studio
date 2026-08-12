@@ -28,10 +28,10 @@ Renderer에는 Node 전역 객체와 파일 경로가 노출되지 않습니다.
 ## Adapter 경계
 
 - `PreviewAdapter`: React 안에서 CSS로만 렌더링합니다. 외부 프로세스 접근 권한이 없습니다.
-- `OfficialCodexAdapter`: M2 조사 전에는 타입 계약만 존재합니다. 공식 설정이나 API가 확인되지 않으면 구현하지 않습니다.
-- `AppServerClientAdapter`: 공식 Codex App Server를 활용하는 독립 클라이언트가 필요할 때 검토할 미래 경계입니다.
+- `OfficialCodexAdapter`: M2 조사 결과 외부 프로그램용 공식 테마 적용 API가 확인되지 않아 기능을 모두 비활성화한 타입 계약으로 유지합니다.
+- `AppServerClientAdapter`: 공식 Codex App Server를 활용하는 독립 클라이언트가 필요할 때 검토할 미래 경계입니다. 공식 데스크톱 앱의 UI를 수정하는 Adapter가 아닙니다.
 
-Adapter가 분리되어 있어도 안전 승인이 생기는 것은 아닙니다. M2의 읽기 전용 조사와 M3 시작 전 사용자 승인이 별도로 필요합니다.
+Adapter가 분리되어 있어도 안전 승인이 생기는 것은 아닙니다. M3를 시작하려면 공식적으로 지원되는 적용 수단이 새로 확인되어야 하며, 그 뒤에도 사용자 승인이 별도로 필요합니다. 현재 결정의 근거는 [ADR-0001](adr/0001-codex-integration-boundary.md)에 기록했습니다.
 
 ## 데이터 구조
 
@@ -60,4 +60,3 @@ disabled
 ```
 
 `handledProcessIds`로 같은 Codex 프로세스 ID에 두 번 적용하지 않습니다. 실패하면 회로 차단 상태가 되어 자동 재시도를 막습니다. M0/M1에서는 상태 머신만 정의하고 운영체제 이벤트나 Codex 프로세스와 연결하지 않습니다.
-

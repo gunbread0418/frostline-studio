@@ -8,7 +8,8 @@ Frostline Studio는 사용자가 고른 사진과 색상으로 Codex에서 영�
 
 - M0: 저장소, 아키텍처, 안전 경계, 자동 적용 상태 머신
 - M1: 로컬 사진 선택, 테마 편집, 실시간 미리보기, 여러 테마 관리, 안전한 로컬 저장, 가져오기와 내보내기
-- M2 이후: 공식 지원 여부를 조사한 뒤 별도 승인과 안전성 검증을 거쳐 결정
+- M2: 공식 문서와 로컬 설치 상태를 읽기 전용으로 조사하고 연동 경계를 결정
+- M3 이후: 공식적으로 지원되는 외부 적용 수단이 확인되고 사용자가 별도로 승인한 경우에만 진행
 
 ## 실행 방법
 
@@ -52,7 +53,7 @@ npm.cmd start
 
 Renderer는 React로 UI와 미리보기만 담당합니다. 파일 선택과 저장은 `contextIsolation: true`, `nodeIntegration: false`인 Electron 환경에서 preload의 제한된 IPC API를 통해서만 요청합니다.
 
-Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. M1에서는 `PreviewAdapter`만 사용하며, `OfficialCodexAdapter`와 `AppServerClientAdapter`는 구현하지 않은 계약으로만 존재합니다. 자세한 내용은 [아키텍처 문서](docs/architecture.md)를 참고하세요.
+Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. 현재는 `PreviewAdapter`만 사용합니다. M2 조사 결과 공식 Codex 앱은 자체 색상 테마를 지원하지만 외부 프로그램이 사진 배경이나 테마를 적용하는 공식 API는 확인되지 않았으므로 `OfficialCodexAdapter`는 비활성 계약으로 유지합니다. `AppServerClientAdapter`는 향후 독립 클라이언트를 검토할 때 사용할 경계입니다. 자세한 내용은 [아키텍처 문서](docs/architecture.md)와 [M2 조사 결과](docs/integration-research.md)를 참고하세요.
 
 ## 안전 설계
 
@@ -66,11 +67,11 @@ Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. M1에서는 `Pr
 
 ## 검증 상태
 
-2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 11개, production build, Electron 재시작 smoke test를 통과했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
+2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 11개, production build, Electron 재시작 smoke test를 통과했습니다. 사용자가 아래 직접 확인 항목 1~6도 모두 정상 작동한다고 확인했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
 
 ## 알려진 제한
 
-현재 버전은 미리보기 전용입니다. 실제 Codex 테마 적용, 복원, Windows 자동 시작, 프로세스 시작 이벤트 감지, 설치 파일 생성은 아직 구현하지 않았습니다. 자세한 내용은 [제한 문서](docs/limitations.md)를 참고하세요.
+현재 버전은 미리보기 전용입니다. 공식 Codex 앱의 내장 `Settings → Appearance`에서는 색상과 글꼴을 직접 바꿀 수 있지만, 사진 배경이나 외부 자동 적용은 공식 지원을 확인하지 못했습니다. 실제 Codex 테마 적용, 복원, Windows 자동 시작, 프로세스 시작 이벤트 감지, 설치 파일 생성은 구현하지 않았습니다. 자세한 내용은 [제한 문서](docs/limitations.md)와 [ADR-0001](docs/adr/0001-codex-integration-boundary.md)을 참고하세요.
 
 ## 스크린샷
 
@@ -86,6 +87,8 @@ M1 화면을 직접 확인한 뒤 공개 가능한 이미지를 `docs/screenshot
 4. 테마 생성, 이름 변경, 복제, 삭제, 가져오기, 내보내기를 확인합니다.
 5. 앱을 닫고 다시 실행했을 때 선택한 테마, 사진, 편집값이 복구되는지 확인합니다.
 6. `Codex에 적용`, `복원`, `자동 적용 켜기`, `비상 정지`가 M1에서 비활성 상태인지 확인합니다.
+
+사용자 확인 결과: 2026-08-12에 1~6번 모두 정상 작동했습니다.
 
 ## 라이선스
 

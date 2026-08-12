@@ -77,4 +77,18 @@ describe('ThemeStore', () => {
 
     expect((await store.load()).themes[0].name).toBe('마지막 저장');
   });
+
+  it('imports the public image-free example theme', async () => {
+    const root = await createTemporaryRoot();
+    const store = new ThemeStore(path.join(root, 'user-data'));
+    const examplePath = path.resolve(
+      process.cwd(),
+      'examples/frostline-midnight.frostline-theme.json',
+    );
+
+    const imported = await store.importTheme(examplePath);
+
+    expect(imported.theme.name).toBe('Frostline Midnight (가져옴)');
+    expect(imported.theme.image).toBeNull();
+  });
 });

@@ -52,6 +52,8 @@ npm.cmd start
 - 앱을 다시 실행해도 선택한 테마와 편집 상태 복구
 - 실행 로그와 최근 로컬 작업 결과 표시
 - 공개 JSON Schema와 사진 없는 예시 테마
+- 공식 Codex `Appearance`에 수동으로 옮길 색상 가이드 복사
+- 강조색과 주요 배경 사이의 WCAG AA 대비 참고 검사
 
 ## 아키텍처
 
@@ -71,7 +73,7 @@ Codex 연동은 `ThemeAdapter` 경계 뒤로 격리했습니다. 현재는 `Prev
 
 ## 검증 상태
 
-2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 11개, production build, Electron 재시작 smoke test를 통과했습니다. 사용자가 아래 직접 확인 항목 1~6도 모두 정상 작동한다고 확인했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
+2026-08-12 기준 Windows 환경에서 lint, TypeScript 검사, 단위·UI 테스트 16개, production build, Electron 재시작 smoke test를 통과했습니다. 사용자가 아래 직접 확인 항목 1~6도 모두 정상 작동한다고 확인했습니다. 선택한 버전과 각 검증의 범위는 [테스트 문서](docs/testing.md)에 기록했습니다.
 
 ## 알려진 제한
 

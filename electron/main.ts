@@ -1,8 +1,9 @@
-import { app, BrowserWindow, dialog, ipcMain, net, protocol } from 'electron';
+import { app, BrowserWindow, clipboard, dialog, ipcMain, net, protocol } from 'electron';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { IPC_CHANNELS } from '../src/shared/ipc';
 import { ThemeStore } from './theme-store';
+import { assertAppearanceGuide } from '../src/shared/validation';
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -155,6 +156,13 @@ function registerIpcHandlers(): void {
     if (result.canceled || result.filePaths.length === 0) return { canceled: true };
     const imported = await store.importTheme(result.filePaths[0]);
     return { canceled: false, theme: imported.theme, fileName: imported.sourceName };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.copyAppearanceGuide, (event, text: unknown) => {
+    assertTrustedSender(event.senderFrame?.url);
+    assertAppearanceGuide(text);
+    clipboard.writeText(text);
+    return { copiedAt: new Date().toISOString() };
   });
 }
 

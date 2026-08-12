@@ -6,6 +6,7 @@ export const IPC_CHANNELS = {
   selectImage: 'studio:select-image',
   exportTheme: 'studio:export-theme',
   importTheme: 'studio:import-theme',
+  copyAppearanceGuide: 'studio:copy-appearance-guide',
 } as const;
 
 export interface SelectImageResult {
@@ -24,5 +25,5 @@ export interface FrostlineApi {
   selectImage(): Promise<SelectImageResult>;
   exportTheme(theme: ThemeRecord): Promise<FileOperationResult>;
   importTheme(): Promise<{ canceled: boolean; theme?: ThemeRecord; fileName?: string }>;
+  copyAppearanceGuide(text: string): Promise<{ copiedAt: string }>;
 }
-

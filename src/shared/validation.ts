@@ -112,3 +112,13 @@ export function assertThemeRecord(value: unknown): asserts value is ThemeRecord 
   }
 }
 
+export function assertAppearanceGuide(value: unknown): asserts value is string {
+  if (
+    typeof value !== 'string' ||
+    value.length === 0 ||
+    value.length > 4096 ||
+    value.includes('\0')
+  ) {
+    throw new Error('복사할 Appearance 가이드의 형식이 올바르지 않습니다.');
+  }
+}

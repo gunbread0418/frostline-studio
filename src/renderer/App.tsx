@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { assessThemeContrast } from '../shared/accessibility';
+import { buildAppearanceGuide } from '../shared/appearance-guide';
 import type { ActivityLog, StudioState, ThemeValues } from '../shared/theme';
 import { ThemePreview } from './components/ThemePreview';
 import { RangeControl } from './components/RangeControl';
@@ -35,6 +37,7 @@ export function App() {
     message: '작업 공간을 여는 중',
   });
   const [activePanel, setActivePanel] = useState<'image' | 'colors'>('image');
+  const [guideStatus, setGuideStatus] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -76,6 +79,14 @@ export function App() {
   const selectedTheme = useMemo(
     () => (studio ? getSelectedTheme(studio) : null),
     [studio],
+  );
+  const appearanceGuide = useMemo(
+    () => (selectedTheme ? buildAppearanceGuide(selectedTheme) : ''),
+    [selectedTheme],
+  );
+  const contrastChecks = useMemo(
+    () => (selectedTheme ? assessThemeContrast(selectedTheme.values) : []),
+    [selectedTheme],
   );
 
   if (bootError) {
@@ -141,6 +152,21 @@ export function App() {
       setStudio((current) => (current ? addImportedTheme(current, result.theme!) : current));
     } catch (error) {
       recordError(`테마 가져오기 실패: ${readError(error)}`);
+    }
+  };
+
+  const copyAppearanceGuide = async () => {
+    try {
+      await window.frostline.copyAppearanceGuide(appearanceGuide);
+      setGuideStatus('클립보드에 복사했습니다.');
+      setStudio((current) =>
+        current
+          ? appendLog(current, 'success', 'Codex Appearance 수동 가이드를 복사했습니다.')
+          : current,
+      );
+    } catch (error) {
+      setGuideStatus('복사하지 못했습니다.');
+      recordError(`Appearance 가이드 복사 실패: ${readError(error)}`);
     }
   };
 
@@ -256,21 +282,44 @@ export function App() {
                 <RangeControl label="블러" min={0} max={24} value={selectedTheme.values.blur} suffix="px" onChange={(blur) => updateValues({ blur })} />
               </div>
             ) : (
-              <div className="control-grid color-controls">
-                <label className="color-control overlay-color"><span>어두운 오버레이</span><div><input aria-label="오버레이 색상" type="color" value={selectedTheme.values.overlayColor} onChange={(event) => updateValues({ overlayColor: event.currentTarget.value })} /><code>{selectedTheme.values.overlayColor}</code></div></label>
-                <RangeControl label="오버레이 투명도" min={0} max={100} value={selectedTheme.values.overlayOpacity} onChange={(overlayOpacity) => updateValues({ overlayOpacity })} />
-                {COLOR_FIELDS.map(({ key, label }) => (
-                  <label className="color-control" key={key}>
-                    <span>{label}</span>
-                    <div><input aria-label={`${label} 색상`} type="color" value={String(selectedTheme.values[key])} onChange={(event) => updateValues({ [key]: event.currentTarget.value })} /><code>{String(selectedTheme.values[key])}</code></div>
-                  </label>
-                ))}
+              <div className="color-editor-stack">
+                <div className="control-grid color-controls">
+                  <label className="color-control overlay-color"><span>어두운 오버레이</span><div><input aria-label="오버레이 색상" type="color" value={selectedTheme.values.overlayColor} onChange={(event) => updateValues({ overlayColor: event.currentTarget.value })} /><code>{selectedTheme.values.overlayColor}</code></div></label>
+                  <RangeControl label="오버레이 투명도" min={0} max={100} value={selectedTheme.values.overlayOpacity} onChange={(overlayOpacity) => updateValues({ overlayOpacity })} />
+                  {COLOR_FIELDS.map(({ key, label }) => (
+                    <label className="color-control" key={key}>
+                      <span>{label}</span>
+                      <div><input aria-label={`${label} 색상`} type="color" value={String(selectedTheme.values[key])} onChange={(event) => updateValues({ [key]: event.currentTarget.value })} /><code>{String(selectedTheme.values[key])}</code></div>
+                    </label>
+                  ))}
+                </div>
+
+                <section className="appearance-guide" aria-label="Codex Appearance 수동 가이드">
+                  <div className="appearance-guide-copy">
+                    <span className="section-kicker">SAFE HANDOFF</span>
+                    <h3>Codex Appearance 수동 가이드</h3>
+                    <p>공식 앱의 <code>Ctrl+, → Appearance</code>에 직접 옮길 색상값을 복사합니다. Codex에는 자동으로 적용하지 않습니다.</p>
+                    <button type="button" onClick={copyAppearanceGuide}>Appearance 가이드 복사</button>
+                    {guideStatus && <span className="guide-status" role="status">{guideStatus}</span>}
+                  </div>
+                  <div className="contrast-summary" aria-label="접근성 대비 검사">
+                    <strong>WCAG AA 대비 참고</strong>
+                    {contrastChecks.map((check) => (
+                      <div className={check.passes ? 'pass' : 'review'} key={check.id}>
+                        <span>{check.label}</span>
+                        <b>{check.ratio.toFixed(2)}:1</b>
+                        <em>{check.passes ? '통과' : '검토 필요'}</em>
+                      </div>
+                    ))}
+                    <small>일반 텍스트 기준 4.5:1 이상을 표시합니다.</small>
+                  </div>
+                </section>
               </div>
             )}
           </section>
 
           <section className="future-controls" aria-label="향후 Codex 적용 기능">
-            <div><span className="section-kicker">CODEX INTEGRATION</span><h2>적용 및 자동화</h2><p>M2 공식 지원 조사와 별도 승인 전까지 잠겨 있습니다.</p></div>
+            <div><span className="section-kicker">CODEX INTEGRATION</span><h2>적용 및 자동화</h2><p>M2 조사에서 공식 외부 적용 API를 확인하지 못해 잠겨 있습니다.</p></div>
             <div className="future-buttons">
               <button type="button" disabled title="M3 승인 뒤 제공">Codex에 적용</button>
               <button type="button" disabled title="M3 승인 뒤 제공">복원</button>

@@ -20,10 +20,13 @@ Electron main
   ├─ 네이티브 파일 선택 창
   ├─ userData/images로 사진 복사
   ├─ 임시 파일 + 교체 방식의 설정 저장
-  └─ 테마 가져오기/내보내기
+  ├─ 테마 가져오기/내보내기
+  └─ 검증된 수동 Appearance 가이드만 클립보드에 복사
 ```
 
 Renderer에는 Node 전역 객체와 파일 경로가 노출되지 않습니다. 사진은 임의 파일 경로 대신 앱이 관리하는 읽기 전용 `frostline-asset://` URL로 표시합니다.
+
+수동 Appearance 가이드는 Renderer에서 현재 테마의 공개 색상값으로 생성합니다. main 프로세스는 문자열 길이와 제어 문자를 검증한 뒤 클립보드에 쓰며 Codex 앱에는 접근하지 않습니다.
 
 ## Adapter 경계
 

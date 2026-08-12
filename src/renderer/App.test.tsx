@@ -11,14 +11,19 @@ const api: FrostlineApi = {
   selectImage: vi.fn(),
   exportTheme: vi.fn(),
   importTheme: vi.fn(),
+  copyAppearanceGuide: vi.fn(),
 };
 
 beforeEach(() => {
+  vi.clearAllMocks();
   vi.mocked(api.loadState).mockResolvedValue(createInitialState());
   vi.mocked(api.saveState).mockResolvedValue({ savedAt: new Date().toISOString() });
   vi.mocked(api.selectImage).mockResolvedValue({ canceled: true });
   vi.mocked(api.exportTheme).mockResolvedValue({ canceled: true });
   vi.mocked(api.importTheme).mockResolvedValue({ canceled: true });
+  vi.mocked(api.copyAppearanceGuide).mockResolvedValue({
+    copiedAt: new Date().toISOString(),
+  });
   Object.defineProperty(window, 'frostline', { value: api, configurable: true });
 });
 
@@ -41,5 +46,18 @@ describe('Frostline Studio renderer', () => {
     expect(screen.getByRole('button', { name: '자동 적용 켜기' })).toBeDisabled();
     expect(screen.getByRole('button', { name: '비상 정지' })).toBeDisabled();
   });
-});
 
+  it('copies a manual Appearance guide without applying it to Codex', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.click(await screen.findByRole('tab', { name: '색상' }));
+    await user.click(screen.getByRole('button', { name: 'Appearance 가이드 복사' }));
+
+    await waitFor(() => expect(api.copyAppearanceGuide).toHaveBeenCalledOnce());
+    expect(vi.mocked(api.copyAppearanceGuide).mock.calls[0][0]).toContain(
+      '외부 자동 적용은 공식 지원이 확인되지 않아 수행하지 않습니다.',
+    );
+    expect(screen.getByText('클립보드에 복사했습니다.')).toBeVisible();
+  });
+});

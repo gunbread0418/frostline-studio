@@ -919,6 +919,10 @@ input[type="range"] {
   grid-template-columns: repeat(4, minmax(140px, 1fr));
 }
 
+.color-editor-stack {
+  display: grid;
+}
+
 .color-control {
   min-width: 0;
 }
@@ -957,6 +961,102 @@ input[type="range"] {
   font-family: "Cascadia Code", Consolas, monospace;
   font-size: 9px;
   text-transform: uppercase;
+}
+
+.appearance-guide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+  gap: 24px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #294039;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(24, 45, 41, 0.62), rgba(13, 19, 27, 0.92));
+}
+
+.appearance-guide h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 620;
+}
+
+.appearance-guide p {
+  max-width: 610px;
+  margin: 7px 0 12px;
+  color: #81918f;
+  font-size: 9px;
+  line-height: 1.65;
+}
+
+.appearance-guide p code {
+  color: #a7e5d6;
+  font-family: "Cascadia Code", Consolas, monospace;
+}
+
+.appearance-guide-copy button {
+  padding: 8px 11px;
+  border: 1px solid #477067;
+  border-radius: 8px;
+  color: #b9eee1;
+  font-size: 9px;
+  background: #18302b;
+  cursor: pointer;
+}
+
+.appearance-guide-copy button:hover {
+  border-color: #6aa99b;
+  background: #1d3933;
+}
+
+.guide-status {
+  margin-left: 10px;
+  color: #83cbbb;
+  font-size: 9px;
+}
+
+.contrast-summary {
+  display: grid;
+  gap: 7px;
+}
+
+.contrast-summary > strong {
+  color: #9eaaa9;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.contrast-summary > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 9px;
+  border: 1px solid #2b3a3b;
+  border-radius: 8px;
+  color: #98a7a8;
+  font-size: 8px;
+  background: rgba(6, 12, 17, 0.38);
+}
+
+.contrast-summary b {
+  color: #d5e0df;
+  font-variant-numeric: tabular-nums;
+}
+
+.contrast-summary em {
+  min-width: 52px;
+  color: #7fd2bf;
+  font-style: normal;
+  text-align: right;
+}
+
+.contrast-summary .review em {
+  color: #e2bf72;
+}
+
+.contrast-summary small {
+  color: #60706f;
+  font-size: 8px;
 }
 
 .future-controls {
@@ -1099,5 +1199,5 @@ input[type="range"] {
   .preview-layout { grid-template-columns: 145px 1fr; }
   .preview-main { padding-inline: 35px; }
   .preview-sidebar { padding-inline: 8px; }
+  .appearance-guide { grid-template-columns: 1fr; }
 }
-

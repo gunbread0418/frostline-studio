@@ -9,6 +9,7 @@ const IPC_CHANNELS = {
   selectImage: 'studio:select-image',
   exportTheme: 'studio:export-theme',
   importTheme: 'studio:import-theme',
+  copyAppearanceGuide: 'studio:copy-appearance-guide',
 } as const;
 
 const api: FrostlineApi = Object.freeze({
@@ -17,6 +18,8 @@ const api: FrostlineApi = Object.freeze({
   selectImage: () => ipcRenderer.invoke(IPC_CHANNELS.selectImage),
   exportTheme: (theme: ThemeRecord) => ipcRenderer.invoke(IPC_CHANNELS.exportTheme, theme),
   importTheme: () => ipcRenderer.invoke(IPC_CHANNELS.importTheme),
+  copyAppearanceGuide: (text: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.copyAppearanceGuide, text),
 });
 
 contextBridge.exposeInMainWorld('frostline', api);

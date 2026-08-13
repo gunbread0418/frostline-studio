@@ -1,6 +1,6 @@
 # ADR-0001: Keep official Codex theme application disabled
 
-- Status: Accepted
+- Status: Superseded in part by ADR-0002
 - Date: 2026-08-12
 - Scope: M2 read-only feasibility research
 

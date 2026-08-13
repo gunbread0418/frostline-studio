@@ -1,13 +1,15 @@
 # Frostline theme format
 
-Frostline Studio의 내보내기 파일은 `.frostline-theme.json` 확장자를 사용하는 JSON 문서입니다. 현재 형식 버전은 `1`입니다.
+Frostline Studio의 내보내기 파일은 `.frostline-theme.json` 확장자를 사용하는 JSON 문서입니다. 현재 형식 버전은 `2`입니다.
 
 공개 Schema는 [schemas/frostline-theme.schema.json](../schemas/frostline-theme.schema.json), 사진이 없는 예시는 [examples/frostline-midnight.frostline-theme.json](../examples/frostline-midnight.frostline-theme.json)에 있습니다.
 
 ## 호환성 규칙
 
-- `format`은 `frostline-theme`, `version`은 `1`이어야 합니다.
+- 새 내보내기 파일은 `format: frostline-theme`, `version: 2`를 사용합니다.
+- 기존 `version: 1` 파일과 로컬 작업 공간은 가져오거나 열 때 v2 기본 글자·글꼴·표면 값을 채운 뒤 원자적으로 변환합니다.
 - 이름은 1~80자, 색상은 `#RRGGBB` 형식입니다.
+- UI·코드 글꼴은 앱의 허용 목록에 있는 Windows 기본 글꼴만 사용할 수 있습니다.
 - 숫자 범위는 Schema와 런타임 검증 코드가 동일하게 제한합니다.
 - 가져온 테마는 새 ID와 시각을 받아 기존 테마를 덮어쓰지 않습니다.
 - 알 수 없는 형식이나 범위를 벗어난 값은 저장 전에 거부합니다.
@@ -18,4 +20,4 @@ Frostline Studio의 내보내기 파일은 `.frostline-theme.json` 확장자를 
 
 ## 버전 변경
 
-호환되지 않는 변경에는 새 `version`을 사용하고 ADR과 마이그레이션 경로를 먼저 작성합니다. 기존 버전의 파일을 묵시적으로 다른 구조로 해석하지 않습니다.
+호환되지 않는 변경에는 새 `version`을 사용하고 명시적인 마이그레이션 경로를 함께 제공합니다. v1→v2 변환은 새 글자 역할, 글꼴과 표면 불투명도에 안전한 기본값을 채우며 원래 테마와 사진을 덮어쓰지 않습니다.

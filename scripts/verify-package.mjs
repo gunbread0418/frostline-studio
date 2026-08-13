@@ -24,6 +24,10 @@ const sensitiveContentPatterns = [
 
 await assertFile(asarPath, 'packaged app.asar');
 await assertFile(path.join(unpackedDirectory, 'Frostline Studio.exe'), 'packaged executable');
+await assertFile(
+  path.join(unpackedDirectory, 'resources', 'helper', 'FrostlineCodexLauncher.exe'),
+  'packaged Frostline Codex launcher',
+);
 
 const releaseEntries = await fs.readdir(releaseDirectory, { withFileTypes: true });
 const installers = releaseEntries

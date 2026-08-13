@@ -10,9 +10,9 @@ describe('theme accessibility helpers', () => {
     expect(chooseReadableForeground('#f8fafc')).toBe('#000000');
   });
 
-  it('marks the default accent contrast as passing', () => {
+  it('checks all editable text roles in the default theme', () => {
     const checks = assessThemeContrast(DEFAULT_THEME_VALUES);
-    expect(checks).toHaveLength(2);
+    expect(checks).toHaveLength(5);
     expect(checks.every((check) => check.passes)).toBe(true);
   });
 
@@ -24,6 +24,6 @@ describe('theme accessibility helpers', () => {
     expect(guide).toContain('오픈소스 예시');
     expect(guide).toContain(DEFAULT_THEME_VALUES.accentColor.toUpperCase());
     expect(guide).toContain('Ctrl+, → Appearance');
-    expect(guide).toContain('외부 자동 적용은 공식 지원이 확인되지 않아 수행하지 않습니다.');
+    expect(guide).toContain('공식 Appearance에는 사진 배경 항목이 없습니다.');
   });
 });

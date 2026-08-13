@@ -1,9 +1,8 @@
-import { assessThemeContrast, chooseReadableForeground } from './accessibility';
+import { assessThemeContrast } from './accessibility';
 import type { ThemeRecord } from './theme';
 
 export function buildAppearanceGuide(theme: ThemeRecord): string {
   const values = theme.values;
-  const foreground = chooseReadableForeground(values.bodyColor);
   const checks = assessThemeContrast(values);
 
   return [
@@ -14,7 +13,10 @@ export function buildAppearanceGuide(theme: ThemeRecord): string {
     '기본 테마: Dark',
     `강조색: ${values.accentColor.toUpperCase()}`,
     `배경색: ${values.bodyColor.toUpperCase()}`,
-    `권장 전경색: ${foreground.toUpperCase()}`,
+    `전경색: ${values.foregroundColor.toUpperCase()}`,
+    `보조 전경색: ${values.mutedForegroundColor.toUpperCase()}`,
+    `UI 글꼴: ${values.uiFontFamily}`,
+    `코드 글꼴: ${values.codeFontFamily}`,
     '',
     'Frostline 참고 표면',
     `사이드바: ${values.sidebarColor.toUpperCase()}`,
@@ -28,7 +30,8 @@ export function buildAppearanceGuide(theme: ThemeRecord): string {
     ),
     '',
     '이 가이드는 값을 수동으로 옮기기 위한 참고 자료입니다.',
-    '사진 배경과 외부 자동 적용은 공식 지원이 확인되지 않아 수행하지 않습니다.',
+    '공식 Appearance에는 사진 배경 항목이 없습니다.',
+    'Frostline의 사진 적용은 별도 승인이 필요한 실험적 로컬 런타임 기능이며 공식 기능이 아닙니다.',
     'Unofficial project. Not affiliated with or endorsed by OpenAI.',
   ].join('\n');
 }

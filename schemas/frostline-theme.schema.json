@@ -8,7 +8,7 @@
   "required": ["format", "version", "exportedAt", "theme"],
   "properties": {
     "format": { "const": "frostline-theme" },
-    "version": { "const": 1 },
+    "version": { "const": 2 },
     "exportedAt": { "type": "string", "format": "date-time" },
     "theme": { "$ref": "#/$defs/theme" }
   },
@@ -34,7 +34,10 @@
         "backgroundFit", "backgroundX", "backgroundY", "backgroundScale",
         "brightness", "saturation", "contrast", "blur", "overlayColor",
         "overlayOpacity", "sidebarColor", "bodyColor", "inputColor",
-        "borderColor", "accentColor"
+        "borderColor", "accentColor", "foregroundColor", "mutedForegroundColor",
+        "inputForegroundColor", "linkColor", "selectionColor", "caretColor",
+        "uiFontFamily", "codeFontFamily", "fontScale", "sidebarOpacity",
+        "bodyOpacity", "inputOpacity", "cardOpacity"
       ],
       "properties": {
         "backgroundFit": { "enum": ["cover", "contain"] },
@@ -51,7 +54,20 @@
         "bodyColor": { "$ref": "#/$defs/hexColor" },
         "inputColor": { "$ref": "#/$defs/hexColor" },
         "borderColor": { "$ref": "#/$defs/hexColor" },
-        "accentColor": { "$ref": "#/$defs/hexColor" }
+        "accentColor": { "$ref": "#/$defs/hexColor" },
+        "foregroundColor": { "$ref": "#/$defs/hexColor" },
+        "mutedForegroundColor": { "$ref": "#/$defs/hexColor" },
+        "inputForegroundColor": { "$ref": "#/$defs/hexColor" },
+        "linkColor": { "$ref": "#/$defs/hexColor" },
+        "selectionColor": { "$ref": "#/$defs/hexColor" },
+        "caretColor": { "$ref": "#/$defs/hexColor" },
+        "uiFontFamily": { "enum": ["Segoe UI", "Arial", "Georgia"] },
+        "codeFontFamily": { "enum": ["Cascadia Code", "Consolas", "Courier New"] },
+        "fontScale": { "type": "number", "minimum": 80, "maximum": 125 },
+        "sidebarOpacity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "bodyOpacity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "inputOpacity": { "type": "number", "minimum": 0, "maximum": 100 },
+        "cardOpacity": { "type": "number", "minimum": 0, "maximum": 100 }
       }
     },
     "theme": {

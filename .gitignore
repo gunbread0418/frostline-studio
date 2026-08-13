@@ -1,7 +1,9 @@
 node_modules/
 dist/
 dist-electron/
+native/bin/
 release/
+release-*/
 coverage/
 *.log
 .DS_Store
@@ -20,4 +22,3 @@ local-assets/
 private-assets/
 *.frostline-private.*
 docs/screenshots/private-*
-

@@ -4,7 +4,13 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { IPC_CHANNELS } from '../src/shared/ipc';
 import { ThemeStore } from './theme-store';
-import { assertAppearanceGuide } from '../src/shared/validation';
+import { assertAppearanceGuide, assertThemeRecord } from '../src/shared/validation';
+import { CodexCdpClient } from './codex-cdp-client';
+import { FileCodexCdpSessionStore } from './codex-cdp-session-store';
+import { OfficialCodexAdapter } from './official-codex-adapter';
+import { WindowsCodexLauncher, type CodexLauncherGateway } from './windows-codex-launcher';
+import { recommendThemePalette } from './theme-recommender';
+import type { ThemeRecommendationMode } from '../src/shared/theme-recommendation';
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -23,6 +29,7 @@ const screenshotOutputPath = readArgumentValue('--capture-output=');
 const productionPagePath = path.resolve(__dirname, '../../dist/index.html');
 let mainWindow: BrowserWindow | null = null;
 let store: ThemeStore;
+let officialCodexAdapter: OfficialCodexAdapter;
 
 if (smokeUserDataPath) {
   app.setPath('userData', path.resolve(smokeUserDataPath));
@@ -49,6 +56,27 @@ app.whenReady().then(async () => {
   app.setName('Frostline Studio');
   store = new ThemeStore(app.getPath('userData'));
   await store.initialize();
+  const launcherPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'helper', 'FrostlineCodexLauncher.exe')
+    : path.resolve(__dirname, '../../native/bin/FrostlineCodexLauncher.exe');
+  const codexLauncher: CodexLauncherGateway =
+    process.platform === 'win32'
+      ? new WindowsCodexLauncher(launcherPath)
+      : {
+          inspect: async () => ({ running: false, aumid: null }),
+          launch: async () => {
+            throw new Error('Codex 사진 스킨은 Windows에서만 사용할 수 있습니다.');
+          },
+          getPortOwner: async () => {
+            throw new Error('Codex 사진 스킨은 Windows에서만 사용할 수 있습니다.');
+          },
+        };
+  officialCodexAdapter = new OfficialCodexAdapter(
+    codexLauncher,
+    new CodexCdpClient(),
+    new FileCodexCdpSessionStore(app.getPath('userData')),
+    (assetId) => store.resolveAssetPath(assetId),
+  );
   registerAssetProtocol();
   registerIpcHandlers();
   createWindow();
@@ -76,6 +104,8 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      offscreen: isScreenshotCapture,
+      backgroundThrottling: !isScreenshotCapture,
     },
   });
 
@@ -172,6 +202,45 @@ function registerIpcHandlers(): void {
     clipboard.writeText(text);
     return { copiedAt: new Date().toISOString() };
   });
+
+  ipcMain.handle(
+    IPC_CHANNELS.recommendThemePalette,
+    (event, theme: unknown, mode: ThemeRecommendationMode) => {
+      assertTrustedSender(event.senderFrame?.url);
+      requireSenderWindow(event.sender);
+      assertThemeRecord(theme);
+      if (!['photo', 'balanced', 'contrast'].includes(mode)) {
+        throw new Error('지원하지 않는 색상 추천 모드입니다.');
+      }
+      return recommendThemePalette(theme, mode, (assetId) => store.resolveAssetPath(assetId));
+    },
+  );
+
+  ipcMain.handle(IPC_CHANNELS.getOfficialCodexStatus, (event) => {
+    assertTrustedSender(event.senderFrame?.url);
+    requireSenderWindow(event.sender);
+    return officialCodexAdapter.getStatus();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.applyOfficialCodexTheme, (event, theme: unknown) => {
+    assertTrustedSender(event.senderFrame?.url);
+    requireSenderWindow(event.sender);
+    assertThemeRecord(theme);
+    return officialCodexAdapter.apply(theme, { timeoutMs: 15_000 });
+  });
+
+  ipcMain.handle(IPC_CHANNELS.updateOfficialCodexTheme, (event, theme: unknown) => {
+    assertTrustedSender(event.senderFrame?.url);
+    requireSenderWindow(event.sender);
+    assertThemeRecord(theme);
+    return officialCodexAdapter.update(theme, { timeoutMs: 8_000 });
+  });
+
+  ipcMain.handle(IPC_CHANNELS.restoreOfficialCodexTheme, (event) => {
+    assertTrustedSender(event.senderFrame?.url);
+    requireSenderWindow(event.sender);
+    return officialCodexAdapter.restore({ timeoutMs: 15_000 });
+  });
 }
 
 function assertTrustedSender(senderUrl: string | undefined): void {
@@ -215,6 +284,9 @@ async function runSmokePhase(): Promise<void> {
           if (Date.now() > deadline) throw new Error('preview did not render');
           await new Promise((resolve) => setTimeout(resolve, 25));
         }
+        // Let the renderer's initial debounced save finish before the smoke phase
+        // writes its own state, otherwise a faster packaged startup can overwrite it.
+        await new Promise((resolve) => setTimeout(resolve, 600));
         const state = await window.frostline.loadState();
         if (${JSON.stringify(smokePhase)} === 'write') {
           state.themes[0].name = 'Smoke Restart Theme';
@@ -258,9 +330,20 @@ async function captureScreenshot(): Promise<void> {
         const colorTab = [...document.querySelectorAll('[role="tab"]')]
           .find((element) => element.textContent?.trim() === '색상');
         colorTab?.click();
-        await new Promise((resolve) => setTimeout(resolve, 250));
+        const stableDeadline = Date.now() + 3000;
+        while (
+          document.querySelector('.boot-state') ||
+          !document.querySelector('.editor-panel') ||
+          colorTab?.getAttribute('aria-selected') !== 'true'
+        ) {
+          if (Date.now() > stableDeadline) throw new Error('editor did not become stable');
+          await new Promise((resolve) => setTimeout(resolve, 50));
+        }
+        await new Promise((resolve) => setTimeout(resolve, 600));
       })()
     `);
+    mainWindow.webContents.invalidate();
+    await new Promise((resolve) => setTimeout(resolve, 250));
     const image = await mainWindow.webContents.capturePage();
     if (image.isEmpty()) throw new Error('captured image is empty');
     const outputPath = path.resolve(screenshotOutputPath);

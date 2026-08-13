@@ -2,6 +2,7 @@ import { constants, promises as fs } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import {
+  LEGACY_THEME_FILE_VERSION,
   THEME_FILE_VERSION,
   createInitialState,
   type StudioState,
@@ -12,6 +13,8 @@ import {
   assertStudioState,
   assertThemeRecord,
   isManagedAssetId,
+  parseStudioState,
+  parseThemeRecord,
 } from '../src/shared/validation';
 
 const MAX_IMAGE_BYTES = 25 * 1024 * 1024;
@@ -49,8 +52,11 @@ export class ThemeStore {
     try {
       const raw = await fs.readFile(this.statePath, 'utf8');
       const value: unknown = JSON.parse(raw);
-      assertStudioState(value);
-      return value;
+      const state = parseStudioState(value);
+      if (isLegacyVersion(value)) {
+        await atomicWriteJson(this.statePath, state);
+      }
+      return state;
     } catch (error) {
       if (isNodeError(error) && error.code === 'ENOENT') {
         return createInitialState();
@@ -139,10 +145,7 @@ export class ThemeStore {
     }
 
     const raw = await fs.readFile(sourcePath, 'utf8');
-    const document: unknown = JSON.parse(raw);
-    if (!isExportDocument(document)) {
-      throw new Error('지원하지 않는 Frostline Studio 테마 파일입니다.');
-    }
+    const document = parseExportDocument(JSON.parse(raw));
 
     const id = randomUUID();
     const now = new Date().toISOString();
@@ -207,48 +210,46 @@ async function atomicWriteJson(filePath: string, value: unknown): Promise<void> 
   }
 }
 
-function isExportDocument(value: unknown): value is ThemeExportDocument {
-  if (!value || typeof value !== 'object') return false;
+function parseExportDocument(value: unknown): ThemeExportDocument {
+  if (!value || typeof value !== 'object') {
+    throw new Error('지원하지 않는 Frostline Studio 테마 파일입니다.');
+  }
   const candidate = value as Partial<ThemeExportDocument>;
   if (
     candidate.format !== 'frostline-theme' ||
-    candidate.version !== THEME_FILE_VERSION ||
+    (candidate.version !== THEME_FILE_VERSION &&
+      candidate.version !== LEGACY_THEME_FILE_VERSION) ||
+    typeof candidate.exportedAt !== 'string' ||
     !candidate.theme ||
     typeof candidate.theme !== 'object'
   ) {
-    return false;
+    throw new Error('지원하지 않는 Frostline Studio 테마 파일입니다.');
   }
 
   const image = candidate.theme.image;
   const themeWithoutImage = { ...candidate.theme, image: null };
-  if (!isThemeLikeExport(themeWithoutImage)) return false;
-  return (
-    image === null ||
-    (typeof image === 'object' &&
-      image !== null &&
+  const normalizedTheme = parseThemeRecord(themeWithoutImage);
+  if (
+    image !== null &&
+    !(
+      typeof image === 'object' &&
       typeof image.originalName === 'string' &&
       image.originalName.length > 0 &&
       image.originalName.length <= 255 &&
       typeof image.mimeType === 'string' &&
       ['image/png', 'image/jpeg', 'image/webp', 'image/bmp'].includes(image.mimeType) &&
       typeof image.dataBase64 === 'string' &&
-      image.dataBase64.length > 0)
-  );
-}
-
-function isThemeLikeExport(value: unknown): boolean {
-  if (!value || typeof value !== 'object') return false;
-  const candidate = value as Record<string, unknown>;
-  const provisional = {
-    ...candidate,
-    image: null,
-  };
-  try {
-    assertThemeRecord(provisional);
-    return true;
-  } catch {
-    return false;
+      image.dataBase64.length > 0
+    )
+  ) {
+    throw new Error('지원하지 않는 Frostline Studio 테마 파일입니다.');
   }
+  return {
+    format: 'frostline-theme',
+    version: THEME_FILE_VERSION,
+    exportedAt: candidate.exportedAt,
+    theme: { ...normalizedTheme, image: image ?? null },
+  };
 }
 
 function extensionForMime(mimeType: string): string {
@@ -259,4 +260,13 @@ function extensionForMime(mimeType: string): string {
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
   return error instanceof Error && 'code' in error;
+}
+
+function isLegacyVersion(value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'version' in value &&
+    value.version === LEGACY_THEME_FILE_VERSION
+  );
 }

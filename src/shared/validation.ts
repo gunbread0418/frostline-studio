@@ -1,7 +1,12 @@
 import {
+  CODE_FONT_FAMILIES,
+  LEGACY_THEME_FILE_VERSION,
   THEME_FILE_VERSION,
+  UI_FONT_FAMILIES,
+  upgradeLegacyThemeValues,
   type ActivityLog,
   type ImageAsset,
+  type LegacyThemeValues,
   type StudioState,
   type ThemeRecord,
   type ThemeValues,
@@ -36,7 +41,41 @@ function isImageAsset(value: unknown): value is ImageAsset {
   );
 }
 
-function isThemeValues(value: unknown): value is ThemeValues {
+export function isThemeValues(value: unknown): value is ThemeValues {
+  if (!isRecord(value)) return false;
+  return (
+    (value.backgroundFit === 'cover' || value.backgroundFit === 'contain') &&
+    isFiniteNumberInRange(value.backgroundX, 0, 100) &&
+    isFiniteNumberInRange(value.backgroundY, 0, 100) &&
+    isFiniteNumberInRange(value.backgroundScale, 50, 200) &&
+    isFiniteNumberInRange(value.brightness, 20, 160) &&
+    isFiniteNumberInRange(value.saturation, 0, 200) &&
+    isFiniteNumberInRange(value.contrast, 50, 180) &&
+    isFiniteNumberInRange(value.blur, 0, 24) &&
+    HEX_COLOR.test(String(value.overlayColor)) &&
+    isFiniteNumberInRange(value.overlayOpacity, 0, 100) &&
+    HEX_COLOR.test(String(value.sidebarColor)) &&
+    HEX_COLOR.test(String(value.bodyColor)) &&
+    HEX_COLOR.test(String(value.inputColor)) &&
+    HEX_COLOR.test(String(value.borderColor)) &&
+    HEX_COLOR.test(String(value.accentColor)) &&
+    HEX_COLOR.test(String(value.foregroundColor)) &&
+    HEX_COLOR.test(String(value.mutedForegroundColor)) &&
+    HEX_COLOR.test(String(value.inputForegroundColor)) &&
+    HEX_COLOR.test(String(value.linkColor)) &&
+    HEX_COLOR.test(String(value.selectionColor)) &&
+    HEX_COLOR.test(String(value.caretColor)) &&
+    (UI_FONT_FAMILIES as readonly string[]).includes(String(value.uiFontFamily)) &&
+    (CODE_FONT_FAMILIES as readonly string[]).includes(String(value.codeFontFamily)) &&
+    isFiniteNumberInRange(value.fontScale, 80, 125) &&
+    isFiniteNumberInRange(value.sidebarOpacity, 0, 100) &&
+    isFiniteNumberInRange(value.bodyOpacity, 0, 100) &&
+    isFiniteNumberInRange(value.inputOpacity, 0, 100) &&
+    isFiniteNumberInRange(value.cardOpacity, 0, 100)
+  );
+}
+
+function isLegacyThemeValues(value: unknown): value is LegacyThemeValues {
   if (!isRecord(value)) return false;
   return (
     (value.backgroundFit === 'cover' || value.backgroundFit === 'contain') &&
@@ -106,10 +145,53 @@ export function assertStudioState(value: unknown): asserts value is StudioState 
   }
 }
 
+export function parseStudioState(value: unknown): StudioState {
+  if (isStudioState(value)) return value;
+  if (
+    !isRecord(value) ||
+    value.version !== LEGACY_THEME_FILE_VERSION ||
+    !Array.isArray(value.themes) ||
+    !Array.isArray(value.logs) ||
+    value.themes.length < 1 ||
+    value.themes.length > 100 ||
+    value.logs.length > 100 ||
+    !value.logs.every(isActivityLog) ||
+    typeof value.selectedThemeId !== 'string' ||
+    value.autoApplyEnabled !== false
+  ) {
+    throw new Error('저장된 테마 데이터의 형식이 올바르지 않습니다.');
+  }
+
+  const themes = value.themes.map(upgradeLegacyThemeRecord);
+  if (
+    themes.some((theme) => theme === null) ||
+    !themes.some((theme) => theme?.id === value.selectedThemeId)
+  ) {
+    throw new Error('이전 버전 테마 데이터를 안전하게 변환하지 못했습니다.');
+  }
+
+  const migrated: StudioState = {
+    version: THEME_FILE_VERSION,
+    selectedThemeId: value.selectedThemeId,
+    themes: themes as ThemeRecord[],
+    autoApplyEnabled: false,
+    logs: value.logs,
+  };
+  assertStudioState(migrated);
+  return migrated;
+}
+
 export function assertThemeRecord(value: unknown): asserts value is ThemeRecord {
   if (!isThemeRecord(value)) {
     throw new Error('테마 데이터의 형식이 올바르지 않습니다.');
   }
+}
+
+export function parseThemeRecord(value: unknown): ThemeRecord {
+  if (isThemeRecord(value)) return value;
+  const migrated = upgradeLegacyThemeRecord(value);
+  if (migrated) return migrated;
+  throw new Error('테마 데이터의 형식이 올바르지 않습니다.');
 }
 
 export function assertAppearanceGuide(value: unknown): asserts value is string {
@@ -121,4 +203,13 @@ export function assertAppearanceGuide(value: unknown): asserts value is string {
   ) {
     throw new Error('복사할 Appearance 가이드의 형식이 올바르지 않습니다.');
   }
+}
+
+function upgradeLegacyThemeRecord(value: unknown): ThemeRecord | null {
+  if (!isRecord(value) || !isLegacyThemeValues(value.values)) return null;
+  const provisional = {
+    ...value,
+    values: upgradeLegacyThemeValues(value.values),
+  };
+  return isThemeRecord(provisional) ? provisional : null;
 }

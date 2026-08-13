@@ -1,6 +1,6 @@
 {
   "format": "frostline-theme",
-  "version": 1,
+  "version": 2,
   "exportedAt": "2026-08-12T00:00:00.000Z",
   "theme": {
     "id": "frostline-midnight-example",
@@ -21,7 +21,20 @@
       "bodyColor": "#0d1119",
       "inputColor": "#171e2a",
       "borderColor": "#2b3545",
-      "accentColor": "#9ee7d5"
+      "accentColor": "#9ee7d5",
+      "foregroundColor": "#f3f7f6",
+      "mutedForegroundColor": "#aebbb8",
+      "inputForegroundColor": "#f3f7f6",
+      "linkColor": "#9ee7d5",
+      "selectionColor": "#315e58",
+      "caretColor": "#9ee7d5",
+      "uiFontFamily": "Segoe UI",
+      "codeFontFamily": "Cascadia Code",
+      "fontScale": 100,
+      "sidebarOpacity": 78,
+      "bodyOpacity": 38,
+      "inputOpacity": 88,
+      "cardOpacity": 76
     },
     "createdAt": "2026-08-12T00:00:00.000Z",
     "updatedAt": "2026-08-12T00:00:00.000Z"

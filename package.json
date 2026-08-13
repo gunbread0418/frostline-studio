@@ -18,7 +18,7 @@
   },
   "main": "dist-electron/electron/main.js",
   "scripts": {
-    "dev": "concurrently -k -n electron,renderer,app -c blue,cyan,green \"npm:dev:electron\" \"npm:dev:renderer\" \"npm:dev:app\"",
+    "dev": "npm run build:helper && concurrently -k -n electron,renderer,app -c blue,cyan,green \"npm:dev:electron\" \"npm:dev:renderer\" \"npm:dev:app\"",
     "dev:electron": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "dev:renderer": "vite --host 127.0.0.1",
     "dev:app": "wait-on dist-electron/electron/main.js tcp:127.0.0.1:5173 && electron . --dev",
@@ -26,8 +26,9 @@
     "clean": "node scripts/clean.mjs",
     "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.electron.json --noEmit",
     "build:electron": "tsc -p tsconfig.electron.json",
+    "build:helper": "node scripts/build-windows-helper.mjs",
     "build:renderer": "vite build",
-    "build": "npm run clean && npm run typecheck && npm run build:electron && npm run build:renderer",
+    "build": "npm run clean && npm run typecheck && npm run build:helper && npm run build:electron && npm run build:renderer",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -125,6 +126,12 @@
       "runAfterFinish": true,
       "deleteAppDataOnUninstall": false
     },
+    "extraResources": [
+      {
+        "from": "native/bin/FrostlineCodexLauncher.exe",
+        "to": "helper/FrostlineCodexLauncher.exe"
+      }
+    ],
     "publish": null
   }
 }

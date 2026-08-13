@@ -4,7 +4,7 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createInitialState } from '../src/shared/theme';
+import { createInitialState, THEME_FILE_VERSION } from '../src/shared/theme';
 import { ThemeStore } from './theme-store';
 
 const temporaryRoots: string[] = [];
@@ -90,5 +90,30 @@ describe('ThemeStore', () => {
 
     expect(imported.theme.name).toBe('Frostline Midnight (가져옴)');
     expect(imported.theme.image).toBeNull();
+  });
+
+  it('atomically migrates a version 1 local workspace to version 2', async () => {
+    const root = await createTemporaryRoot();
+    const store = new ThemeStore(path.join(root, 'user-data'));
+    await store.initialize();
+    const legacy = structuredClone(createInitialState()) as unknown as Record<string, unknown>;
+    legacy.version = 1;
+    const themes = legacy.themes as Array<{ values: Record<string, unknown> }>;
+    for (const key of [
+      'foregroundColor', 'mutedForegroundColor', 'inputForegroundColor', 'linkColor',
+      'selectionColor', 'caretColor', 'uiFontFamily', 'codeFontFamily', 'fontScale',
+      'sidebarOpacity', 'bodyOpacity', 'inputOpacity', 'cardOpacity',
+    ]) {
+      delete themes[0].values[key];
+    }
+    await fs.writeFile(store.statePath, JSON.stringify(legacy), 'utf8');
+
+    const migrated = await store.load();
+    const persisted = JSON.parse(await fs.readFile(store.statePath, 'utf8')) as Record<string, unknown>;
+
+    expect(migrated.version).toBe(THEME_FILE_VERSION);
+    expect(migrated.themes[0].values.uiFontFamily).toBe('Segoe UI');
+    expect(migrated.themes[0].values.inputForegroundColor).toMatch(/^#[0-9a-f]{6}$/);
+    expect(persisted.version).toBe(THEME_FILE_VERSION);
   });
 });

@@ -5,6 +5,7 @@ import type {
   ThemeAdapter,
 } from '../../shared/adapters';
 import type { ThemeRecord } from '../../shared/theme';
+import { resolveThemeTokens } from '../../shared/theme-tokens';
 
 export class PreviewAdapter implements ThemeAdapter {
   readonly kind = 'preview' as const;
@@ -12,6 +13,7 @@ export class PreviewAdapter implements ThemeAdapter {
     preview: true,
     apply: true,
     restore: true,
+    liveUpdate: true,
     autoApply: false,
   };
 
@@ -27,14 +29,25 @@ export class PreviewAdapter implements ThemeAdapter {
 
   createPreviewVariables(theme: ThemeRecord): CSSProperties {
     const { values } = theme;
+    const tokens = resolveThemeTokens(values);
     return {
-      '--preview-overlay': values.overlayColor,
-      '--preview-overlay-opacity': values.overlayOpacity / 100,
-      '--preview-sidebar': values.sidebarColor,
-      '--preview-body': values.bodyColor,
-      '--preview-input': values.inputColor,
-      '--preview-border': values.borderColor,
-      '--preview-accent': values.accentColor,
+      '--preview-overlay': tokens.overlay,
+      '--preview-sidebar': tokens.sidebarSurface,
+      '--preview-body': tokens.bodySurface,
+      '--preview-input': tokens.inputSurface,
+      '--preview-card': tokens.cardSurface,
+      '--preview-border': tokens.border,
+      '--preview-accent': tokens.accent,
+      '--preview-accent-foreground': tokens.accentForeground,
+      '--preview-foreground': tokens.foreground,
+      '--preview-muted-foreground': tokens.mutedForeground,
+      '--preview-input-foreground': tokens.inputForeground,
+      '--preview-link': tokens.link,
+      '--preview-selection': tokens.selection,
+      '--preview-caret': tokens.caret,
+      '--preview-ui-font': tokens.uiFontStack,
+      '--preview-code-font': tokens.codeFontStack,
+      '--preview-font-scale': tokens.fontScale,
     } as CSSProperties;
   }
 
@@ -56,4 +69,3 @@ export class PreviewAdapter implements ThemeAdapter {
 }
 
 export const previewAdapter = new PreviewAdapter();
-

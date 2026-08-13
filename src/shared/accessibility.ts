@@ -1,7 +1,12 @@
 import type { ThemeValues } from './theme';
 
 export interface ContrastCheck {
-  id: 'accent-on-body' | 'accent-on-sidebar';
+  id:
+    | 'foreground-on-body'
+    | 'muted-on-body'
+    | 'input-foreground-on-input'
+    | 'link-on-body'
+    | 'caret-on-input';
   label: string;
   foreground: string;
   background: string;
@@ -22,15 +27,27 @@ export function chooseReadableForeground(background: string): '#000000' | '#ffff
     : '#ffffff';
 }
 
+export function ensureReadableColor(
+  preferred: string,
+  background: string,
+  minimum = 4.5,
+): string {
+  if (contrastRatio(preferred, background) >= minimum) return preferred;
+  return chooseReadableForeground(background);
+}
+
 export function assessThemeContrast(values: ThemeValues): ContrastCheck[] {
   return [
-    createCheck('accent-on-body', '강조색 / 본문', values.accentColor, values.bodyColor),
+    createCheck('foreground-on-body', '본문 글자 / 본문', values.foregroundColor, values.bodyColor),
+    createCheck('muted-on-body', '보조 글자 / 본문', values.mutedForegroundColor, values.bodyColor, 3),
     createCheck(
-      'accent-on-sidebar',
-      '강조색 / 사이드바',
-      values.accentColor,
-      values.sidebarColor,
+      'input-foreground-on-input',
+      '입력 글자 / 입력창',
+      values.inputForegroundColor,
+      values.inputColor,
     ),
+    createCheck('link-on-body', '링크 / 본문', values.linkColor, values.bodyColor),
+    createCheck('caret-on-input', '입력 커서 / 입력창', values.caretColor, values.inputColor, 3),
   ];
 }
 
@@ -39,8 +56,8 @@ function createCheck(
   label: string,
   foreground: string,
   background: string,
+  minimum = 4.5,
 ): ContrastCheck {
-  const minimum = 4.5;
   const ratio = contrastRatio(foreground, background);
   return {
     id,
